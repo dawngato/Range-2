@@ -64,7 +64,7 @@ If auditd is deployed, watch for writes. Check for an existing rule first so a
 repeat run does not fail with `Rule exists`:
 
 ```bash
-if command -v auditctl >/dev/null 2>&1; then auditctl -l | grep -F '/opt/scripts/maintenance.sh' || auditctl -w /opt/scripts/maintenance.sh -p wa -k cron_tamper; ausearch -k cron_tamper; else echo 'auditctl not installed; auditd is not available on this host'; fi
+if command -v auditctl >/dev/null 2>&1; then auditctl -l | grep -F '/opt/scripts/maintenance.sh' || auditctl -w /opt/scripts/maintenance.sh -p wa -k cron_tamper; ausearch -k cron_tamper | tail -n 8; else echo 'auditctl not installed; auditd is not available on this host'; fi
 ```
 
 ![Auditd watch availability](screenshots/m4_blue_06_audit_watch.png)
