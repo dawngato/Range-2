@@ -122,9 +122,11 @@ This optional reverse-shell command was not executed in this session because no 
 cat /var/www/html/secret/hint.txt
 ```
 
-The hint file was verified locally; it identifies FTP on port 21 in the internal DMZ.
+The hint file was verified locally on the hosted M1 instance; it identifies FTP
+on port 21 in the internal DMZ. The screenshot below shows the exact command
+and its returned hint output.
 
-![M1 hint](screenshots/m1_red_08_hint_local.png)
+![M1 hint command and FTP output](screenshots/m1_red_08_hint_local.png)
 
 For this single-host deployment, scan the verified local address:
 
