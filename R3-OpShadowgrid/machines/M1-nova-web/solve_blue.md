@@ -41,7 +41,7 @@ log poisoning indicator.
 ### 3. RCE Command Execution
 
 ```bash
-grep -E "cmd=(id|whoami|cat|ls|bash|nc|cat\\+)" /var/log/novatech_access.log | tail -n 8
+grep -E "cmd=(id|whoami|cat|ls|bash|nc|cat\+)" /var/log/novatech_access.log | tail -n 8
 ```
 
 ![RCE commands in the access log](screenshots/m1_blue_03_rce_log.png)
@@ -63,11 +63,7 @@ grep -n -E "page=.*(passwd|novatech_access|apache2)|cmd=" /var/log/novatech_acce
 
 If auditd is deployed:
 ```bash
-if command -v ausearch >/dev/null 2>&1; then
-    ausearch -c "bash" --start today | grep "uid=33"   # uid 33 = www-data
-else
-    echo "ausearch not installed; auditd validation unavailable on this host"
-fi
+if command -v ausearch >/dev/null 2>&1; then ausearch -c "bash" --start today | grep "uid=33"; else echo "ausearch not installed; auditd validation unavailable on this host"; fi
 ```
 
 ![Auditd availability check](screenshots/m1_blue_05_audit_check.png)
