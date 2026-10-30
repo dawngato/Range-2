@@ -37,11 +37,11 @@ For a separate multi-host deployment, replace `10.0.2.15` with the verified M2 D
 printf 'user anonymous anonymous\nls -la\nget flag2.txt /tmp/flag2.txt\nget staff_handover.txt /tmp/staff_handover.txt\nbye\n' | ftp -inv 10.0.2.15
 ```
 
-The FTP username is `anonymous`; the password can be `anonymous` (or another non-empty value, depending on the server policy).
-
 ![Anonymous FTP command](screenshots/m2_red_03_ftp_command.png)
 
 ![Anonymous FTP listing and downloads](screenshots/m2_red_03_ftp.png)
+
+The FTP username is `anonymous`; the password can be `anonymous` (or another non-empty value, depending on the server policy).
 
 ---
 

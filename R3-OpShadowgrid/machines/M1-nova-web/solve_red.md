@@ -134,11 +134,11 @@ optional step.
 cat /var/www/html/secret/hint.txt
 ```
 
+![M1 hint command and FTP output](screenshots/m1_red_08_hint_local.png)
+
 The hint file was verified locally on the hosted M1 instance; it identifies FTP
 on port 21 in the internal DMZ. The screenshot below shows the exact command
 and its returned hint output.
-
-![M1 hint command and FTP output](screenshots/m1_red_08_hint_local.png)
 
 For this single-host deployment, scan the verified local address:
 

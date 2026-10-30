@@ -15,9 +15,9 @@
 grep -E "page=(/etc|/var|/proc|php://|%2Fetc%2F|%2Fvar%2F|php%3A%2F%2F)" /var/log/novatech_access.log | tail -n 8
 ```
 
-Apache records URL-encoded query strings, so the `%2F...` alternatives are required when searching the raw access log.
-
 ![LFI indicators in the access log](screenshots/m1_blue_01_lfi_log.png)
+
+Apache records URL-encoded query strings, so the `%2F...` alternatives are required when searching the raw access log.
 
 Indicators:
 - `?page=/etc/passwd` — direct file read attempt
@@ -67,11 +67,11 @@ requires the audit log to be selected explicitly with `--input`:
 sudo ausearch --input /var/log/audit/audit.log -c "bash" --start today | grep "uid=33" || echo "No uid=33 bash audit events found"
 ```
 
+![Auditd bash query result](screenshots/m1_blue_05_audit_check.png)
+
 The command ran against the live audit log and returned `comm="bash"` records
 with `uid=33`, `gid=33`, and `exe="/usr/bin/bash"`, confirming a shell launched
 under the Apache/www-data account.
-
-![Auditd bash query result](screenshots/m1_blue_05_audit_check.png)
 
 ---
 
