@@ -22,7 +22,7 @@ test -f /var/log/syslog && echo '/var/log/syslog present' || echo '/var/log/sysl
 ### 2. Cron Execution (Baseline)
 
 ```bash
-journalctl --no-pager | grep '/opt/scripts/maintenance.sh'
+journalctl --no-pager | grep '/opt/scripts/maintenance.sh' | tail -n 8
 ```
 
 ![Root cron execution](screenshots/m4_blue_10_cron_root.png)
