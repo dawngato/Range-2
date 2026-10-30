@@ -61,9 +61,9 @@ grep -n -E "page=.*(passwd|novatech_access|apache2)|cmd=" /var/log/novatech_acce
 
 ### 5. Shell Process from Apache (SIEM / Auditd)
 
-If auditd is deployed, run `ausearch` with root access because the audit log is not readable by the regular user:
+Check for a populated audit log before invoking `ausearch`:
 ```bash
-if command -v ausearch >/dev/null 2>&1; then sudo ausearch -c "bash" --start today | grep "uid=33" || echo "No uid=33 bash audit events found"; else echo "ausearch not installed; auditd validation unavailable on this host"; fi
+if command -v ausearch >/dev/null 2>&1 && sudo test -s /var/log/audit/audit.log; then sudo ausearch -c "bash" --start today | grep "uid=33" || echo "No uid=33 bash audit events found"; else echo "auditd audit.log unavailable on this host; audit validation skipped"; fi
 ```
 
 ![Auditd availability check](screenshots/m1_blue_05_audit_check.png)
