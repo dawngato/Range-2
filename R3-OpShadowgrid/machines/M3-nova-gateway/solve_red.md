@@ -82,10 +82,15 @@ cat /root/secrets.txt
 ```bash
 # Scan the local lab subnet for SSH services
 nmap -n -p 22 --open 10.0.2.0/24 --reason -oN /tmp/m3_m4_scan.txt
-cat /tmp/m3_m4_scan.txt
 ```
 
 ![Local SSH service scan](screenshots/m3_red_07_m4_scan.png)
+
+```bash
+cat /tmp/m3_m4_scan.txt
+```
+
+![Local SSH scan output](screenshots/m3_red_07_m4_scan_output.png)
 
 Only `10.0.2.15` is provisioned with SSH in this single-host setup, so the
 validated M4 pivot target is the same host and uses the `backupp` account:

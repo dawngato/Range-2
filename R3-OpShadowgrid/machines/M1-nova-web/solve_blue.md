@@ -28,10 +28,13 @@ Indicators:
 
 ```bash
 grep -F "<?php" /var/log/novatech_access.log | tail -n 3
-grep -Ei "system|exec|passthru|shell_exec" /var/log/novatech_access.log | tail -n 3
 ```
 
 ![PHP payload in the User-Agent](screenshots/m1_blue_02_php_ua.png)
+
+```bash
+grep -Ei "system|exec|passthru|shell_exec" /var/log/novatech_access.log | tail -n 3
+```
 
 ![Command-execution function name in the User-Agent](screenshots/m1_blue_02_exec_ua.png)
 

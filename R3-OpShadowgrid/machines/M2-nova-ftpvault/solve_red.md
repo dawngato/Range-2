@@ -22,10 +22,15 @@ The active interface reports `10.0.2.15`. Scan that verified address:
 
 ```bash
 nmap -n -p 21 --open 10.0.2.15 --reason -oN /tmp/m2_ftp_scan.txt
-cat /tmp/m2_ftp_scan.txt
 ```
 
 ![FTP service discovery](screenshots/m2_red_02_scan.png)
+
+```bash
+cat /tmp/m2_ftp_scan.txt
+```
+
+![FTP scan output](screenshots/m2_red_02_scan_output.png)
 
 For a separate multi-host deployment, replace `10.0.2.15` with the verified M2 DMZ address before scanning.
 

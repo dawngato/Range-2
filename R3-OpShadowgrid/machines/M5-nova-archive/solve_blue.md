@@ -14,10 +14,16 @@
 Check whether the file-based sources and audit tools exist before using them:
 
 ```bash
-test -f /var/log/auth.log && echo '/var/log/auth.log present' || echo '/var/log/auth.log absent'; test -f /var/log/syslog && echo '/var/log/syslog present' || echo '/var/log/syslog absent'
+test -f /var/log/auth.log && echo '/var/log/auth.log present' || echo '/var/log/auth.log absent'
 ```
 
 ![M5 log source check](screenshots/m5_blue_00_log_sources.png)
+
+```bash
+test -f /var/log/syslog && echo '/var/log/syslog present' || echo '/var/log/syslog absent'
+```
+
+![M5 syslog source check](screenshots/m5_blue_00_syslog.png)
 
 ### 2. SUID Binary Inventory
 

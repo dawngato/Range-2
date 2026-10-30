@@ -122,11 +122,21 @@ watch -n 1 ls -la /var/tmp/.suid_bash
 
 ```bash
 /var/tmp/.suid_bash -p  # -p flag preserves effective UID (root)
-whoami
-id
 ```
 
 ![Root shell through SUID bash](screenshots/m4_red_15_root_shell.png)
+
+```bash
+whoami
+```
+
+![Root shell identity](screenshots/m4_red_15_root_shell_whoami.png)
+
+```bash
+id
+```
+
+![Root shell UID details](screenshots/m4_red_15_root_shell_id.png)
 
 The shell's real UID remains `backupp`, but `whoami` reports `root` and `id` shows `euid=0`, which confirms the effective root shell.
 
