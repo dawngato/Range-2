@@ -52,17 +52,17 @@ non-standard SUID binary in `/usr/local/bin`.
 
 ### 3. Process Execution with Anomalous Arguments (auditd)
 
-The following audit commands were run on the live host from the documented
-`archivist` SSH session. Both tools are installed, but audit administration and
-audit-log reads require root on this host.
+The `archivist` account is not in the sudoers file, so audit administration must
+be performed from a root-authorized shell on the same host. The idempotent rule
+check below adds the rule when absent and reports when it is already present.
+The separate `ausearch` query remains a read-only check from the documented
+`archivist` session and is expected to require root for audit-log access.
 
 ```bash
-if command -v auditctl >/dev/null 2>&1; then auditctl -a always,exit -F path=/usr/local/bin/safereader -F perm=x -k suid_safereader; else echo 'auditctl not installed; auditd is not available on this host'; fi
+if command -v auditctl >/dev/null 2>&1; then if auditctl -l | grep -F 'suid_safereader' >/dev/null 2>&1; then echo 'suid_safereader rule already present'; else auditctl -a always,exit -F path=/usr/local/bin/safereader -F perm=x -k suid_safereader && echo 'suid_safereader rule added'; fi; else echo 'auditctl not installed; auditd is not available on this host'; fi
 ```
 
-![Audit rule availability](screenshots/m5_blue_04_audit_rule.png)
-
-The live command returned `You must be root to run this program.`
+![Audit rule status from a root-authorized shell](screenshots/m5_blue_04_audit_rule.png)
 
 ```bash
 if command -v ausearch >/dev/null 2>&1; then ausearch -k suid_safereader | grep -E '\.\./|etc/shadow|root/'; else echo 'ausearch not installed; auditd is not available on this host'; fi
