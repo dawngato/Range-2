@@ -54,19 +54,24 @@ Build a timeline:
 3. Second `?page=/var/log/novatech_access.log&cmd=...` (execution)
 
 ```bash
-grep -n -E "page=.*(passwd|novatech_access|apache2)|cmd=" /var/log/novatech_access.log | tail -n 12
+grep -n -E "page=.*(passwd|novatech_access|apache2)|cmd=" /var/log/novatech_access.log | tail -n 6
 ```
 
 ![Correlated LFI-to-RCE timeline](screenshots/m1_blue_04_timeline.png)
 
 ### 5. Shell Process from Apache (SIEM / Auditd)
 
-Check for a populated audit log before invoking `ausearch`:
+Run the audit query on the M1 host after auditd has been enabled. This host
+requires the audit log to be selected explicitly with `--input`:
 ```bash
-if command -v ausearch >/dev/null 2>&1 && sudo test -s /var/log/audit/audit.log; then sudo ausearch -c "bash" --start today | grep "uid=33" || echo "No uid=33 bash audit events found"; else echo "auditd audit.log unavailable on this host; audit validation skipped"; fi
+sudo ausearch --input /var/log/audit/audit.log -c "bash" --start today | grep "uid=33" || echo "No uid=33 bash audit events found"
 ```
 
-![Auditd availability check](screenshots/m1_blue_05_audit_check.png)
+The command ran against the live audit log and returned `comm="bash"` records
+with `uid=33`, `gid=33`, and `exe="/usr/bin/bash"`, confirming a shell launched
+under the Apache/www-data account.
+
+![Auditd bash query result](screenshots/m1_blue_05_audit_check.png)
 
 ---
 
