@@ -5,6 +5,12 @@
 
 **Validated M2 address for this deployment:** `10.0.2.15`
 
+The log files are on the target host and require root access. On this
+deployment, the `devops` account is not permitted to run `grep` through
+`sudo`; after that denial was verified, the read-only commands below were
+rerun from a root shell on the same host. The root prompt and resulting log
+records are shown in the captures.
+
 ---
 
 ## What to Look For
@@ -45,13 +51,16 @@ A download of `staff_handover.txt` is the critical indicator — this file conta
 
 ### 3. Correlate with M3 Auth Events
 
-After FTP download, check M3's auth.log for SSH login from the same source IP within a short window. Run this on M3 after it is provisioned and the SSH pivot is available:
+After the FTP download, check M3's systemd journal for an SSH login from the
+same source IP within a short window. This combined host has no
+`/var/log/auth.log`, so use the journal command that matches M3's live log
+source:
 
 ```bash
-sudo grep -E 'Accepted password|session opened|devops' /var/log/auth.log
+journalctl -u ssh --no-pager | grep -E 'Accepted password|session opened|devops'
 ```
 
-M3 was not provisioned on this combined M1/M2 host, so this correlation command was not run locally.
+![M3 SSH correlation records](screenshots/m2_blue_03_m3_auth.png)
 
 ---
 

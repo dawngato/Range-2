@@ -87,12 +87,15 @@ cat /tmp/m3_m4_scan.txt
 
 ![Local SSH service scan](screenshots/m3_red_07_m4_scan.png)
 
-Only `10.0.2.15` is provisioned with SSH in this local M3 setup, so an M4 pivot was not attempted. When M4 is provisioned separately, replace the placeholder with its verified private address:
+Only `10.0.2.15` is provisioned with SSH in this single-host setup, so the
+validated M4 pivot target is the same host and uses the `backupp` account:
 
 ```bash
-ssh backup@<M4-PRIV-IP>
+ssh -o StrictHostKeyChecking=no backupp@10.0.2.15
 # Password: Backups3cure
 ```
+
+![M4 SSH pivot](screenshots/m3_red_08_m4_pivot.png)
 
 ---
 

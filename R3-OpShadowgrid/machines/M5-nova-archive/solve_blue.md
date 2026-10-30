@@ -22,12 +22,12 @@ test -f /var/log/auth.log && echo '/var/log/auth.log present' || echo '/var/log/
 ### 2. SUID Binary Inventory
 
 ```bash
-find /usr/local/bin /usr/bin /bin -perm /4000 -type f 2>/dev/null | sort
+find /usr/local/bin /usr/bin /bin -perm /4000 -type f 2>/dev/null | sort | tail -n 15
 ```
 
-The inventory is bounded to executable directories to avoid traversing mounted pseudo-filesystems. Inspect the custom binary directly as well:
-
 ![Bounded SUID inventory](screenshots/m5_blue_01_suid_inventory.png)
+
+The inventory is bounded to executable directories to avoid traversing mounted pseudo-filesystems. Inspect the custom binary directly as well:
 
 ```bash
 find /usr/local/bin -perm /4000 -type f -ls 2>/dev/null
@@ -46,11 +46,17 @@ non-standard SUID binary in `/usr/local/bin`.
 
 ### 3. Process Execution with Anomalous Arguments (auditd)
 
+The following audit commands were run on the live host from the documented
+`archivist` SSH session. Both tools are installed, but audit administration and
+audit-log reads require root on this host.
+
 ```bash
 if command -v auditctl >/dev/null 2>&1; then auditctl -a always,exit -F path=/usr/local/bin/safereader -F perm=x -k suid_safereader; else echo 'auditctl not installed; auditd is not available on this host'; fi
 ```
 
 ![Audit rule availability](screenshots/m5_blue_04_audit_rule.png)
+
+The live command returned `You must be root to run this program.`
 
 ```bash
 if command -v ausearch >/dev/null 2>&1; then ausearch -k suid_safereader | grep -E '\.\./|etc/shadow|root/'; else echo 'ausearch not installed; auditd is not available on this host'; fi
@@ -58,15 +64,19 @@ if command -v ausearch >/dev/null 2>&1; then ausearch -k suid_safereader | grep 
 
 ![Traversal argument audit availability](screenshots/m5_blue_05_audit_args.png)
 
-Look for arguments containing `../` (traversal) or paths outside `/opt/archive`.
+The live command found `ausearch`, but it could not open
+`/var/log/audit/audit.log` because the `archivist` session is not root. With a
+root-authorized audit query, look for arguments containing `../` (traversal) or
+paths outside `/opt/archive`.
 
 ### 4. File Access by Root Process with User Real UID
 
-An auditd record would show: `uid=<archivist_uid> euid=0` when safereader is invoked.
+An auditd record would show: `uid=1006 euid=0` when safereader is invoked.
 A root-effective process reading `/root/flag5.txt` on behalf of a non-root user is
-a strong SUID abuse indicator.
-
-Auditd is unavailable in this local setup, so this condition cannot be reconstructed from logs here; use the SUID inventory and direct execution evidence.
+a strong SUID abuse indicator. On this live host, the file-access queries below
+also could not open `/var/log/audit/audit.log` from the non-root `archivist`
+session, so the SUID inventory and direct execution evidence remain the verified
+indicators until a root-authorized audit query is collected.
 
 ### 5. /etc/shadow or /root Access
 

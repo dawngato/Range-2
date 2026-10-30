@@ -77,12 +77,15 @@ nmap -n -p 22 --open 10.0.2.15 --reason
 
 ![M3 SSH check](screenshots/m2_red_05_m3_scan.png)
 
-This combined M1/M2 deployment has no M3 SSH service on `10.0.2.15`, so the pivot was not attempted here. When M3 is provisioned separately, use its verified DMZ address:
+This single-host deployment exposes M3 SSH on the same verified address, so use
+that address for the pivot:
 
 ```bash
-ssh devops@<M3-DMZ-IP>
+ssh -o StrictHostKeyChecking=no devops@10.0.2.15
 # Password: N0vaTech@24
 ```
+
+![M3 SSH pivot](screenshots/m2_red_06_m3_pivot.png)
 
 ---
 
