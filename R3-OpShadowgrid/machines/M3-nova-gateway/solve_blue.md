@@ -56,14 +56,14 @@ if command -v ausearch >/dev/null 2>&1; then ausearch -c 'bash' --start today | 
 
 ![Auditd availability check](screenshots/m3_blue_03_audit_check.png)
 
-If auditd is enabled, a bash shell with effective UID 0 (root) spawned as a child of
-the vim process is the definitive indicator. Auditd is not installed in this local setup,
-so the `journalctl -t sudo` command above is the available evidence.
+On this host auditd is installed and active. The returned `euid=0` bash records are
+the definitive indicator that a root shell was spawned after the vim escape. The
+sudo journal remains useful for correlating the shell with the `/usr/bin/vim` command.
 
 ### 4. Subsequent Root Activity
 
 ```bash
-journalctl -t sudo --no-pager | grep -E 'USER=root|COMMAND='
+journalctl -t sudo --no-pager | grep -E 'USER=root|COMMAND=' | tail -n 8
 ```
 
 ![Root-targeted sudo activity](screenshots/m3_blue_04_root_activity.png)
